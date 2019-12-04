@@ -5,11 +5,11 @@
     <table v-if="!loading" class="table table-hover">
       <thead class="thead-light">
       <tr>
-        <th scope="col">Hole Name</th>
-        <th scope="col">Latitude</th>
-        <th scope="col">Longitude</th>
+        <th scope="col">Timestamp</th>
+        <th scope="col">Depth</th>
         <th scope="col">Dip</th>
         <th scope="col">Azimuth</th>
+        <th scope="col">Incorrect</th>
         <th scope="col">
           <!-- Action buttons -->
         </th>
@@ -20,10 +20,6 @@
           v-for="drillHole in drillHoles"
           :holeImport="drillHole"
           :key="drillHole.id">
-        </drill-hole-item>
-        <drill-hole-item
-          @save-new="addDrillHole($event)"
-          :isnew="true">
         </drill-hole-item>
       </tbody>
     </table>
@@ -36,36 +32,38 @@ import DrillHoleItem from '@/components/DrillHoleItem';
 import DrillHole from '@/models/drill-hole';
 
 export default {
-  name: 'DrillHole',
+  name: 'DepthReading',
   data(){
     return{
       loading: true,
-      drillHoles: []
+      drillHoles: [
+        new DrillHole({
+          id: "1",
+          name: "Hole 1",
+          lat: 37.15,
+          lng: -53.3,
+          dip: 0.5,
+          azimuth: 2
+        }),
+        new DrillHole({
+          id: "2",
+          name: "Hole 2",
+          lat: 66.11,
+          lng: 23.5,
+          dip: -0.1,
+          azimuth: 0.5
+        })]
     }
   },
+  props: ['hole_id'],
   components: {
     PulseLoader,
     DrillHoleItem
   },
-  methods: {
-    addDrillHole(item){
-      this.drillHoles.push(item);
-    },
-    loadDrillHoles(){
-      this.drillHoles = [];
-      this.$api.get("/drillholes")
-        .then(response => {
-          console.log(response.data);
-          response.data.forEach(hole => {
-            this.drillHoles.push(new DrillHole(hole));
-          });
-
-          this.loading = false;
-        });
-    }
-  },
-  mounted(){
-    this.loadDrillHoles();
+  created(){
+    setTimeout(()=>{
+      this.loading = false;
+    }, 1000);
   }
 }
 </script>

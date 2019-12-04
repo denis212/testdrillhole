@@ -17,15 +17,15 @@
       </thead>
       <tbody>
       <depth-reading-item
+        @save-new="addDepthReading($event)"
+        :hole_id="$attrs.hole_id"
+        :isnew="true">
+      </depth-reading-item>
+      <depth-reading-item
         v-for="depthReading in depthReadings"
         :drImport="depthReading"
         :hole_id="$attrs.hole_id"
         :key="depthReading.id">
-      </depth-reading-item>
-      <depth-reading-item
-        @save-new="addDepthReading($event)"
-        :hole_id="$attrs.hole_id"
-        :isnew="true">
       </depth-reading-item>
       </tbody>
     </table>
@@ -52,7 +52,7 @@
     },
     methods: {
       addDepthReading(item){
-        this.depthReadings.push(item);
+        this.depthReadings.unshift(item);
       },
       loadDrillHole(){
         this.$api.get("/drillholes/"+this.$attrs.hole_id)

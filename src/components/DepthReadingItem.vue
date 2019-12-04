@@ -3,7 +3,7 @@
     <td>
       <input
         type="number"
-        :readonly="mode==='view'"
+        :readonly="!isnew"
         min="0"
         class="form-control"
         v-model.number="depthReading.depth">
@@ -11,7 +11,7 @@
     <td>
       <input
         type="number"
-        :readonly="mode==='view'"
+        :readonly="!isnew"
         min="0"
         max="90"
         step="0.01"
@@ -21,7 +21,7 @@
     <td>
       <input
         type="number"
-        :readonly="mode==='view'"
+        :readonly="!isnew"
         min="0"
         max="360"
         step="0.01"

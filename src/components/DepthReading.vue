@@ -1,71 +1,87 @@
 <template>
-  <div id="drillhole">
+  <div id="depthreading">
+    <h2 v-text="headerTitle"></h2>
     <pulse-loader :loading="loading" class="mt-2"></pulse-loader>
 
     <table v-if="!loading" class="table table-hover">
       <thead class="thead-light">
       <tr>
-        <th scope="col">Timestamp</th>
         <th scope="col">Depth</th>
         <th scope="col">Dip</th>
         <th scope="col">Azimuth</th>
-        <th scope="col">Incorrect</th>
+        <th scope="col">Trustworthy?</th>
         <th scope="col">
           <!-- Action buttons -->
         </th>
       </tr>
       </thead>
       <tbody>
-        <drill-hole-item
-          v-for="drillHole in drillHoles"
-          :holeImport="drillHole"
-          :key="drillHole.id">
-        </drill-hole-item>
+      <depth-reading-item
+        v-for="depthReading in depthReadings"
+        :drImport="depthReading"
+        :hole_id="$attrs.hole_id"
+        :key="depthReading.id">
+      </depth-reading-item>
+      <depth-reading-item
+        @save-new="addDepthReading($event)"
+        :hole_id="$attrs.hole_id"
+        :isnew="true">
+      </depth-reading-item>
       </tbody>
     </table>
   </div>
 </template>
 
 <script>
-import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
-import DrillHoleItem from '@/components/DrillHoleItem';
-import DrillHole from '@/models/drill-hole';
+  import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+  import DepthReadingItem from '@/components/DepthReadingItem';
+  import DepthReading from '@/models/depth-reading';
 
-export default {
-  name: 'DepthReading',
-  data(){
-    return{
-      loading: true,
-      drillHoles: [
-        new DrillHole({
-          id: "1",
-          name: "Hole 1",
-          lat: 37.15,
-          lng: -53.3,
-          dip: 0.5,
-          azimuth: 2
-        }),
-        new DrillHole({
-          id: "2",
-          name: "Hole 2",
-          lat: 66.11,
-          lng: 23.5,
-          dip: -0.1,
-          azimuth: 0.5
-        })]
+  export default {
+    name: 'DepthReading',
+    data(){
+      return{
+        loading: true,
+        depthReadings: [],
+        drillHole: ''
+      }
+    },
+    components: {
+      PulseLoader,
+      DepthReadingItem
+    },
+    methods: {
+      addDepthReading(item){
+        this.depthReadings.push(item);
+      },
+      loadDrillHole(){
+        this.$api.get("/drillholes/"+this.$attrs.hole_id)
+          .then(response => {
+            this.drillHole = response.data;
+          });
+      },
+      loadDepthReadings(){
+        this.depthReadings = [];
+        this.$api.get("/depthreadings/"+this.$attrs.hole_id)
+          .then(response => {
+            response.data.forEach(dr => {
+              this.depthReadings.push(new DepthReading(dr));
+            });
+
+            this.loading = false;
+          });
+      }
+    },
+    computed: {
+      headerTitle(){
+        return "Depth Readings: "+this.drillHole.name;
+      }
+    },
+    mounted(){
+      this.loadDrillHole();
+      this.loadDepthReadings();
     }
-  },
-  props: ['hole_id'],
-  components: {
-    PulseLoader,
-    DrillHoleItem
-  },
-  created(){
-    setTimeout(()=>{
-      this.loading = false;
-    }, 1000);
   }
-}
 </script>
 
 <style scoped>

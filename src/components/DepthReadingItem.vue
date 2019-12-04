@@ -2,31 +2,11 @@
   <tr>
     <td>
       <input
-        type="text"
-        maxlength="255"
-        :readonly="mode==='view'"
-        class="form-control"
-        v-model="drillHole.name">
-    </td>
-    <td>
-      <input
         type="number"
         :readonly="mode==='view'"
-        min="-90"
-        max="90"
-        step="0.01"
+        min="0"
         class="form-control"
-        v-model.number="drillHole.lat">
-    </td>
-    <td>
-      <input
-        type="number"
-        :readonly="mode==='view'"
-        min="-90"
-        max="90"
-        step="0.01"
-        class="form-control"
-        v-model.number="drillHole.lng">
+        v-model.number="depthReading.depth">
     </td>
     <td>
       <input
@@ -36,7 +16,7 @@
         max="90"
         step="0.01"
         class="form-control"
-        v-model.number="drillHole.dip">
+        v-model.number="depthReading.dip">
     </td>
     <td>
       <input
@@ -46,19 +26,16 @@
         max="360"
         step="0.01"
         class="form-control"
-        v-model.number="drillHole.azimuth">
+        v-model.number="depthReading.azimuth">
+    </td>
+    <td>
+      <input
+        type="checkbox"
+        :disabled="mode==='view' || isnew"
+        class="form-control"
+        v-model.number="depthReading.trustworthy">
     </td>
     <td class="text-right">
-      <!-- Open Depth Readings -->
-      <button
-        v-if="mode === 'view'"
-        type="button"
-        class="btn btn-sm btn-primary"
-        @click="navigateToDepthReadings"
-        key="depth-readings-button">
-        <i class="fas fa-water"></i>
-      </button>
-
       <!-- Edit -->
       <button
         v-if="mode === 'view'"
@@ -102,52 +79,50 @@
 </template>
 
 <script>
-  import DrillHole from '@/models/drill-hole';
+  import DepthReading from '@/models/depth-reading';
 
   export default {
-    name: 'drill-hole-item',
+    name: 'depth-reading-item',
     data(){
       return {
         mode: 'view',
-        drillHole: new DrillHole({})
+        depthReading: new DepthReading({})
       }
     },
     props: [
-      'holeImport',
-      'isnew'
+      'drImport',
+      'isnew',
+      'hole_id'
     ],
     methods: {
       reset(){
-        if(this.holeImport){
-          this.drillHole = new DrillHole(this.holeImport);
+        if(this.drImport){
+          this.depthReading = new DepthReading(this.drImport);
         }
         else if(this.isnew){
           this.mode = 'edit';
-          this.drillHole = new DrillHole({});
+          this.depthReading = new DepthReading({ hole_id: this.hole_id});
         }
-      },
-      navigateToDepthReadings(){
-        this.$router.push({path: '/depthreadings/'+this.drillHole.id});
       },
       cancelNew() {
         this.reset();
       },
       cancelChanges() {
-        if(this.holeImport){
-          this.drillHole = new DrillHole(this.holeImport);
+        if(this.drImport){
+          this.depthReading = new DepthReading(this.drImport);
         }
         this.mode = 'view';
       },
       saveItem(){
         if(this.isnew){
-          this.$api.post("/drillholes", this.drillHole)
+          this.$api.post("/depthreadings", this.depthReading)
             .then(item => {
               this.$emit("save-new", item.data);
               this.reset();
             });
         }
         else{
-          this.$api.put("/drillholes", this.drillHole)
+          this.$api.put("/depthreadings", this.depthReading)
             .then(() => {
               this.mode = 'view';
             });

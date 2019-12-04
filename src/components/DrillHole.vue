@@ -1,7 +1,7 @@
 <template>
   <div id="drillhole">
+    <h2> Drill Holes </h2>
     <pulse-loader :loading="loading" class="mt-2"></pulse-loader>
-
     <table v-if="!loading" class="table table-hover">
       <thead class="thead-light">
       <tr>
@@ -55,7 +55,6 @@ export default {
       this.drillHoles = [];
       this.$api.get("/drillholes")
         .then(response => {
-          console.log(response.data);
           response.data.forEach(hole => {
             this.drillHoles.push(new DrillHole(hole));
           });

@@ -19,3 +19,15 @@ npm run serve
 ```
 
 This is where you'll be accessing the site from. On successful compile, go to http://localhost:8080 to access the site. Make sure the server is running before you open the site, otherwise it won't completely load.
+
+If you Found some error with "faker"
+
+please install the dependencies with
+
+```
+npm install faker
+```
+
+and then start with project setup and start server again!
+
+thankyou
